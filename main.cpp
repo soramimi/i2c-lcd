@@ -7,13 +7,18 @@
 #define I2C_SCL_PIN RPI_V2_GPIO_P1_05
 #define I2C_SDA_PIN RPI_V2_GPIO_P1_03
 
+#define LCD_ADDRESS 0x27
+#define LCD_CMD 0
+#define LCD_CHR 1
+#define LCD_BACKLIGHT 0x08
+#define ENABLE 0x04
+
 // software I2C
 class I2C {
 private:
 	void delay()
 	{
-		// Bit-bang方式によるオーバーヘッドで充分なウェイトが得られるので何もしない
-		// usleep(10);
+//		usleep(1);
 	}
 
 	// 初期化
@@ -147,30 +152,23 @@ public:
 
 I2C *wire;
 
-
-#define LCD_ADDRESS 0x27
-#define LCD_CMD 0
-#define LCD_CHR 1
-#define LCD_BACKLIGHT 0x08
-#define ENABLE 0x04
-
 void lcd_byte(uint8_t bits, uint8_t mode)
 {
 	uint8_t hi = mode | (bits & 0xf0) | LCD_BACKLIGHT;
 	uint8_t lo = mode | ((bits << 4) & 0xf0) | LCD_BACKLIGHT;
-	usleep(500);
+	usleep(300);
 	wire->write(hi);
-	usleep(10);
+	usleep(1);
 	wire->write(hi | ENABLE);
-	usleep(10);
+	usleep(1);
 	wire->write(hi);
-	usleep(10);
+	usleep(1);
 	wire->write(lo);
-	usleep(10);
+	usleep(1);
 	wire->write(lo | ENABLE);
-	usleep(10);
+	usleep(1);
 	wire->write(lo);
-	usleep(500);
+	usleep(300);
 }
 
 void lcd_print(char const *ptr)
